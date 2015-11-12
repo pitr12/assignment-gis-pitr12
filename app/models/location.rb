@@ -1,23 +1,11 @@
 class Location
-  def self.test
-    #point
+  def self.all_resorts(params)
     build_geoJSON(ActiveRecord::Base.connection.execute(<<SQL))
-      SELECT name, ST_AsGeoJSON(ST_Transform(way,4326)) as geometry
-      FROM planet_osm_point
-      WHERE leisure='ski_resort'
-         or sport='skiing'
-         or landuse='winter_sports'
+     SELECT name, ST_Distance(ST_SetSRID(ST_MakePoint('#{params[:lon]}', '#{params[:lat]}'), 4326)::geography, way::geography) as distance,
+                  ST_AsGeoJSON(way) as geometry
+     FROM ski_areas
+     ORDER BY distance
 SQL
-#     #polygon
-#     build_geoJSON(ActiveRecord::Base.connection.execute(<<SQL))
-#       SELECT name, ST_AsGeoJSON(ST_Transform(way,4326)) as geometry
-#       FROM planet_osm_polygon
-#       WHERE osm_id='190874707' and (
-#         leisure='ski_resort'
-#         or sport='skiing'
-#         or landuse='winter_sports'
-#       )
-# SQL
   end
 
   def self.build_geoJSON (locations)
@@ -28,6 +16,7 @@ SQL
           "geometry": JSON.parse(location["geometry"]),
           "properties": {
               "title": location["name"],
+              "description": location["distance"],
               "marker-color": "#3887BE",
               "marker-size": "large",
               "marker-symbol": "skiing"
