@@ -1,10 +1,14 @@
 class Location
   def self.all_resorts(params)
+    area = true;
+    area = "ST_DWithin(ST_SetSRID(ST_MakePoint(#{params[:lon]}, #{params[:lat]}), 4326)::geography,way::geography,#{params[:area]})" if (params[:area].present?)
+
     build_geoJSON(ActiveRecord::Base.connection.execute(<<SQL))
-     SELECT name, ST_Distance(ST_SetSRID(ST_MakePoint('#{params[:lon]}', '#{params[:lat]}'), 4326)::geography, way::geography) as distance,
-                  ST_AsGeoJSON(way) as geometry
-     FROM ski_areas
-     ORDER BY distance
+    SELECT name, ST_Distance(ST_SetSRID(ST_MakePoint(#{params[:lon]}, #{params[:lat]}), 4326)::geography, way::geography) as distance,
+                 ST_AsGeoJSON(way) as geometry
+    FROM ski_areas
+    WHERE #{area}
+    ORDER BY distance
 SQL
   end
 
