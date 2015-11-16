@@ -1,6 +1,8 @@
 var map;
 var myLayer;
 var hotelsLayer;
+var hotelsMarkerLayer;
+var markersLayer;
 var myPosition;
 var info;
 
@@ -11,6 +13,8 @@ $(document).ready(function() {
     map = L.mapbox.map('map', 'pitr12.ecdd20b0', {zoomControl:false}).setView([48.6,19.8],8);
     myLayer = L.mapbox.featureLayer().addTo(map);
     hotelsLayer = L.mapbox.featureLayer().addTo(map);
+    hotelsMarkerLayer = L.mapbox.featureLayer().addTo(map);
+    markersLayer = L.mapbox.featureLayer().addTo(map);
     var location = false;
     info = document.getElementById('info');
 
@@ -113,41 +117,78 @@ $(document).ready(function() {
     };
 
     // When the features layer is ready,
-    // ie. added to the map, run populateListing.
+    // ie. added to the map, add marker on each polygon and run populateListing.
     myLayer.on('ready', function(){
+        var skiMarkers = [];
+        var hotelMarkers = [];
         myLayer.eachLayer(function(layer){
             if ("H" == layer.feature.properties.type){
                 myLayer.removeLayer(layer);
                 layer.addTo(hotelsLayer);
+                if(layer.feature.geometry.type == 'Polygon' || layer.feature.geometry.type == 'LineString'){
+                    if(layer._latlngs.length != 0) {
+                        hotelMarkers.push(createGeoJson(layer));
+                    }
+                }
+            }
+            else{
+                if(layer.feature.geometry.type == 'Polygon' || layer.feature.geometry.type == 'LineString'){
+                    if(layer._latlngs.length != 0) {
+                        skiMarkers.push(createGeoJson(layer));
+                    }
+                }
             }
         });
-        //myLayer.eachLayer(function(layer){
-        //    if(layer.feature.geometry.type == 'Polygon'){
-        //        if(layer._latlngs.length != 0) {
-        //            var bounds = layer.getBounds();
-        //            var center = bounds.getCenter();
-        //            var new_marker = L.marker(center, layer.feature.properties);
-        //            new_marker.addTo(myPolyMarkersLayer);
-        //        }
-        //        layer.addTo(myPolyLayer);
-        //    }
-        //    if(layer.feature.geometry.type == 'LineString'){
-        //        if(layer._latlngs.length != 0) {
-        //            var bounds = layer.getBounds();
-        //            var center = bounds.getCenter();
-        //            var new_marker = L.marker(center, layer.feature.properties);
-        //            new_marker.addTo(myPolyMarkersLayer);
-        //        }
-        //        layer.addTo(myLineLayer);
-        //    }
-        //});
+
+        hotelsMarkerLayer.setGeoJSON(hotelMarkers);
+        markersLayer.setGeoJSON(skiMarkers);
         populateListing();
     });
 });
 
+function createGeoJson(marker){
+    var json = {};
+    if("S" == marker.feature.properties.type){
+        json = {
+            "type": "Feature",
+            "geometry": {
+              type: 'Point',
+              coordinates: [marker.getBounds().getCenter().lng, marker.getBounds().getCenter().lat]
+            },
+            "properties": {
+                "title": marker.feature.properties["title"],
+                "description": marker.feature.properties["description"],
+                "type": marker.feature.properties["type"],
+                "marker-color": "#3887BE",
+                "marker-size": "large",
+                "marker-symbol": "skiing"
+            }
+        }
+    }
+    else{
+        json = {
+            "type": "Feature",
+            "geometry": {
+                type: 'Point',
+                coordinates: [marker.getBounds().getCenter().lng, marker.getBounds().getCenter().lat]
+            },
+            "properties": {
+                "title": marker.feature.properties["title"],
+                "type": marker.feature.properties["type"],
+                "marker-color": "#FE7569",
+                "marker-size": "large",
+                "marker-symbol": "lodging"
+            }
+        }
+    }
+    return json;
+}
+
 function clearMap(){
     myLayer.clearLayers();
     hotelsLayer.clearLayers();
+    markersLayer.clearLayers();
+    hotelsMarkerLayer.clearLayers();
 }
 
 function showAllResorts(){
