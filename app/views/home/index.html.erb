@@ -1,21 +1,43 @@
 <div class="container-fluid fill">
   <div class="row fill">
     <div id="menu_container" class="col-sm-2 fill-height text-center">
-        <div class="row">
-          <div id="logo"><h1>iLyze</h1></div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <button type="button" id='show' class="btn btn-primary">Show All</button>
-          </div>
-          <div class="col-md-6">
-            <button type="button" id='find' class="btn btn-primary">Find</button>
-          </div>
-        </div>
-        <div class="row">
-            <div id="info" class="info"></div>
+      <div class="row">
+        <div class="label"><h1>iLyze</h1></div>
+      </div>
+      <div class="row">
+        <div class="col-md-4"><label for="amount" class="label">Distance (km):</label></div>
+        <div id="slider-range-min" class="col-md-8"></div>
+      </div>
+      <div class="row">
+        <!--<label for="amount" class="label">Distance (km):</label>-->
+        <input type="text" id="area" class="form-control">
+      </div>
+      <div class="row">
+        <div class="checkbox">
+          <label clss="near_hotels"><input type="checkbox" value="" id="near_hotels" onclick="valueChanged()">Only near hotels</label>
         </div>
       </div>
+      <div class="row" id="hotels_distance_slider_row">
+        <input id="hotels_distance_slider" type="text" data-slider-min="0" data-slider-max="500" data-slider-step="5" data-slider-value="500">
+        <span id="hotels_distance_slider_val" class="slider">Current value: <span id="current_val">500</span></span>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <button type="button" id='find' class="btn btn-primary">Find</button>
+        </div>
+      </div>
+      <div class="row">
+        <div id="info" class="info"></div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <button type="button" id='show' class="btn btn-primary">All Ski Resorts</button>
+        </div>
+        <div class="col-md-6">
+          <button type="button" id='show_hotels' class="btn btn-primary">All Hotels</button>
+        </div>
+      </div>
+    </div>
     <div class="col-sm-10 fill-height">
       <div id='map'></div>
     </div>

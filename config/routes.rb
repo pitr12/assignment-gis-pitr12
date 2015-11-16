@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   root 'home#index'
 
   scope 'api' do
-    resources :locations
+    get 'locations' => 'locations#index'
+    get 'hotels' => 'locations#hotels'
+    get 'ski_near_hotels' => 'locations#ski_near_hotels'
   end
 
   # Example of regular route:
