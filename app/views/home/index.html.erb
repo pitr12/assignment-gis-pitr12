@@ -5,11 +5,10 @@
         <div class="label"><h1>iLyze</h1></div>
       </div>
       <div class="row">
-        <div class="col-md-4"><label for="amount" class="label">Distance (km):</label></div>
+        <div class="col-md-4"><label for="area" class="label">Distance (km):</label></div>
         <div id="slider-range-min" class="col-md-8"></div>
       </div>
       <div class="row">
-        <!--<label for="amount" class="label">Distance (km):</label>-->
         <input type="text" id="area" class="form-control">
       </div>
       <div class="row">
@@ -17,9 +16,12 @@
           <label clss="near_hotels"><input type="checkbox" value="" id="near_hotels" onclick="valueChanged()">Only near hotels</label>
         </div>
       </div>
-      <div class="row" id="hotels_distance_slider_row">
-        <input id="hotels_distance_slider" type="text" data-slider-min="0" data-slider-max="500" data-slider-step="5" data-slider-value="500">
-        <span id="hotels_distance_slider_val" class="slider">Current value: <span id="current_val">500</span></span>
+      <div class="row">
+        <div class="col-md-6"><label for="hotels_distance_slider" id="hotels_label" class="label" style="display:none">Max hotel distance (m):</label></div>
+        <div id="hotels_distance_slider" class="col-md-6"></div>
+      </div>
+      <div class="row">
+        <input type="text" id="hotels_distance_slider_val" class="form-control">
       </div>
       <div class="row">
         <div class="col-md-12">

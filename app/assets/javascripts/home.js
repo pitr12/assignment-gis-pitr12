@@ -16,6 +16,23 @@ $(document).ready(function() {
 
 
     $(function() {
+        $( "#hotels_distance_slider" ).slider({
+            range: "min",
+            value: 3000,
+            min: 0,
+            max: 20000,
+            step: 1,
+            slide: function( event, ui ) {
+                $( "#hotels_distance_slider_val" ).val( ui.value );
+            }
+        });
+        $( "#hotels_distance_slider_val" ).val( $( "#hotels_distance_slider" ).slider( "value" ) );
+        $("#hotels_distance_slider_val").on('input', function() {
+            $('#hotels_distance_slider').slider('value', $(this).val());
+        });
+    });
+
+    $(function() {
         $( "#slider-range-min" ).slider({
             range: "min",
             value: 500,
@@ -149,7 +166,7 @@ function findResorts(){
     var area = $("#area").val() * 1000;
     clearMap();
     if(document.getElementById('near_hotels').checked){
-        var hotel_distance = $("#hotels_distance_slider").val();
+        var hotel_distance = $("#hotels_distance_slider_val").val();
         myLayer.loadURL('/api/ski_near_hotels?lat=' +myPosition.getLatLng().lat+ '&lon=' +myPosition.getLatLng().lng+ '&area=' +area+ '&hotel_dist=' +hotel_distance);
     }
     else {
@@ -234,9 +251,11 @@ function valueChanged()
     if($("#near_hotels").is(":checked")) {
         $("#hotels_distance_slider").show();
         $("#hotels_distance_slider_val").show();
+        $("#hotels_label").show();
     }
     else {
         $("#hotels_distance_slider").hide();
         $("#hotels_distance_slider_val").hide();
+        $("#hotels_label").hide();
     }
 }
