@@ -5,16 +5,18 @@ var hotelsMarkerLayer;
 var markersLayer;
 var myPosition;
 var info;
+var clusterGroup;
 
 $(document).ready(function() {
     $("#hotels_distance_slider").hide();
     $("#hotels_distance_slider_val").hide();
     L.mapbox.accessToken = 'pk.eyJ1IjoicGl0cjEyIiwiYSI6ImNpZzN1a3ZmMDAybWx2bmtoZzdxcTY3ZTMifQ.MAq5KrbVv-505sbh9UzDQw';
     map = L.mapbox.map('map', 'pitr12.ecdd20b0', {zoomControl:false}).setView([48.6,19.8],8);
-    myLayer = L.mapbox.featureLayer().addTo(map);
+    myLayer = L.mapbox.featureLayer();
     hotelsLayer = L.mapbox.featureLayer().addTo(map);
     hotelsMarkerLayer = L.mapbox.featureLayer().addTo(map);
-    markersLayer = L.mapbox.featureLayer().addTo(map);
+    markersLayer = L.mapbox.featureLayer();
+    clusterGroup = new L.MarkerClusterGroup();
     var location = false;
     info = document.getElementById('info');
 
@@ -132,6 +134,8 @@ $(document).ready(function() {
                 }
             }
             else{
+                clusterGroup.addLayer(layer);
+                
                 if(layer.feature.geometry.type == 'Polygon' || layer.feature.geometry.type == 'LineString'){
                     if(layer._latlngs.length != 0) {
                         skiMarkers.push(createGeoJson(layer));
@@ -142,6 +146,12 @@ $(document).ready(function() {
 
         hotelsMarkerLayer.setGeoJSON(hotelMarkers);
         markersLayer.setGeoJSON(skiMarkers);
+
+        markersLayer.eachLayer(function(hlayer){
+            clusterGroup.addLayer(hlayer);
+        });
+
+        map.addLayer(clusterGroup);
         populateListing();
     });
 });
@@ -189,6 +199,7 @@ function clearMap(){
     hotelsLayer.clearLayers();
     markersLayer.clearLayers();
     hotelsMarkerLayer.clearLayers();
+    clusterGroup.clearLayers();
 }
 
 function showAllResorts(){
