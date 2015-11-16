@@ -23,6 +23,48 @@
       <div class="row">
         <input type="text" id="hotels_distance_slider_val" class="form-control">
       </div>
+
+        <div class="row">
+          <div class="col-md-9" style="margin-left:12%;margin-bottom: -20px">
+            <div class="panel panel-default">
+              <!-- Default panel contents -->
+              <div class="panel-heading">Difficulty</div>
+
+              <!-- List group -->
+              <ul class="list-group">
+                <li class="list-group-item">
+                  Novice
+                  <div class="material-switch pull-right">
+                    <input id="someSwitchOptionSuccess" name="difficulty" type="checkbox" value="novice"/>
+                    <label for="someSwitchOptionSuccess" class="label-success"></label>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  Easy
+                  <div class="material-switch pull-right">
+                    <input id="someSwitchOptionPrimary" name="difficulty" type="checkbox" value="easy"/>
+                    <label for="someSwitchOptionPrimary" class="label-primary"></label>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  Intermediate
+                  <div class="material-switch pull-right">
+                    <input id="someSwitchOptionDanger" name="difficulty" type="checkbox" value="intermediate"/>
+                    <label for="someSwitchOptionDanger" class="label-danger"></label>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  Advanced
+                  <div class="material-switch pull-right">
+                    <input id="someSwitchOptionDefault" name="difficulty" type="checkbox" value="advanced"/>
+                    <label for="someSwitchOptionDefault" class="label-default"></label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
       <div class="row">
         <div class="col-md-12">
           <button type="button" id='find' class="btn btn-primary">Find</button>

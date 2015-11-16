@@ -3,11 +3,15 @@ class Location
     area = true;
     area = "ST_DWithin(ST_SetSRID(ST_MakePoint(#{params[:lon]}, #{params[:lat]}), 4326)::geography,way::geography,#{params[:area]})" if (params[:area].present?)
 
+    difficulty = true;
+    difficulty = get_difficulty(params[:difficulty]) if(params[:difficulty].present?)
+
+
     build_geoJSON(ActiveRecord::Base.connection.execute(<<SQL))
     SELECT name, ST_Distance(ST_SetSRID(ST_MakePoint(#{params[:lon]}, #{params[:lat]}), 4326)::geography, way::geography) as distance,
                  ST_AsGeoJSON(way) as geometry, 'S' as type
-    FROM ski_areas
-    WHERE #{area}
+    FROM ski_areas AS s
+    WHERE #{area} AND (#{difficulty})
     ORDER BY distance
 SQL
   end
@@ -26,6 +30,9 @@ SQL
     hotel_dist = 5000
     hotel_dist = params[:hotel_dist] if params[:hotel_dist].present?
 
+    difficulty = true;
+    difficulty = get_difficulty(params[:difficulty]) if(params[:difficulty].present?)
+
     build_geoJSON(ActiveRecord::Base.connection.execute(<<SQL))
     WITH ski_near_hotel AS (
       SELECT s.way as ski_geometry, s.name as ski_name, s.aerialway, s.landuse, s.leisure, s.sport, s.tags,
@@ -34,7 +41,7 @@ SQL
       FROM ski_areas as s
       CROSS JOIN hotels
       WHERE ST_DWithin(s.way::geography,hotels.way::geography,#{hotel_dist}) and
-            #{area}
+            #{area} AND (#{difficulty})
       GROUP BY ski_geometry, ski_name, s.aerialway, s.landuse, s.leisure, s.sport, s.tags, hotel_geometry, hotel_name, distance
     )
 
@@ -47,6 +54,18 @@ SQL
       GROUP BY geometry, name, distance
       ORDER BY distance
 SQL
+  end
+
+  def self.get_difficulty(difficulties)
+    difficulties = difficulties.split(",")
+    novice = easy = intermediate = advanced = "false"
+    novice = "s.tags::hstore @> '\"piste:difficulty\"=>\"novice\"'" if(difficulties.include?("novice"))
+    easy = "s.tags::hstore @> '\"piste:difficulty\"=>\"easy\"'" if(difficulties.include?("easy"))
+    intermediate = "s.tags::hstore @> '\"piste:difficulty\"=>\"intermediate\"'" if(difficulties.include?("intermediate"))
+    advanced = "s.tags::hstore @> '\"piste:difficulty\"=>\"advanced\"'" if(difficulties.include?("advanced"))
+
+    result = novice + " or " + easy + " or " +intermediate+ " or " +advanced
+    return result
   end
 
   def self.build_geoJSON (locations)

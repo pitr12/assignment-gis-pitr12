@@ -15,10 +15,10 @@ class LocationsController < ApplicationController
   end
 
   def location_params
-    params.permit(:lat, :lon, :area)
+    params.permit(:lat, :lon, :area, :difficulty)
   end
 
   def hotel_params
-    params.permit(:lat, :lon, :area, :hotel_dist)
+    params.permit(:lat, :lon, :area, :hotel_dist, :difficulty)
   end
 end

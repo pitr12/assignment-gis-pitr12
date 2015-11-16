@@ -14,7 +14,7 @@ $(document).ready(function() {
     var location = false;
     info = document.getElementById('info');
 
-
+    //my distance slider
     $(function() {
         $( "#hotels_distance_slider" ).slider({
             range: "min",
@@ -32,6 +32,7 @@ $(document).ready(function() {
         });
     });
 
+    //hotel distance slider
     $(function() {
         $( "#slider-range-min" ).slider({
             range: "min",
@@ -162,15 +163,20 @@ function showAllHotels(){
 }
 
 function findResorts(){
+        var difficulty = [];
+        $.each($("input[name='difficulty']:checked"), function(){
+            difficulty.push($(this).val());
+        });
+
     info.style.display='block';
     var area = $("#area").val() * 1000;
     clearMap();
     if(document.getElementById('near_hotels').checked){
         var hotel_distance = $("#hotels_distance_slider_val").val();
-        myLayer.loadURL('/api/ski_near_hotels?lat=' +myPosition.getLatLng().lat+ '&lon=' +myPosition.getLatLng().lng+ '&area=' +area+ '&hotel_dist=' +hotel_distance);
+        myLayer.loadURL('/api/ski_near_hotels?lat=' +myPosition.getLatLng().lat+ '&lon=' +myPosition.getLatLng().lng+ '&area=' +area+ '&hotel_dist=' +hotel_distance+ '&difficulty=' +difficulty);
     }
     else {
-        myLayer.loadURL('/api/locations?lat=' + myPosition.getLatLng().lat + '&lon=' + myPosition.getLatLng().lng + '&area=' + area);
+        myLayer.loadURL('/api/locations?lat=' + myPosition.getLatLng().lat + '&lon=' + myPosition.getLatLng().lng + '&area=' + area+ '&difficulty=' +difficulty);
     }
 }
 
