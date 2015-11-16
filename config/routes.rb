@@ -5,6 +5,12 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'home#index'
 
+  scope 'api' do
+    get 'locations' => 'locations#index'
+    get 'hotels' => 'locations#hotels'
+    get 'ski_near_hotels' => 'locations#ski_near_hotels'
+  end
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
