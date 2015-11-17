@@ -11,7 +11,7 @@ $(document).ready(function() {
     $("#hotels_distance_slider").hide();
     $("#hotels_distance_slider_val").hide();
     L.mapbox.accessToken = 'pk.eyJ1IjoicGl0cjEyIiwiYSI6ImNpZzN1a3ZmMDAybWx2bmtoZzdxcTY3ZTMifQ.MAq5KrbVv-505sbh9UzDQw';
-    map = L.mapbox.map('map', 'pitr12.ecdd20b0', {zoomControl:false}).setView([48.6,19.8],8);
+    map = L.mapbox.map('map', 'pitr12.o6bmhpc8', {zoomControl:false}).setView([48.6,19.8],8);
     myLayer = L.mapbox.featureLayer();
     hotelsLayer = L.mapbox.featureLayer().addTo(map);
     hotelsMarkerLayer = L.mapbox.featureLayer().addTo(map);
@@ -72,11 +72,8 @@ $(document).ready(function() {
             }),
             draggable: true
         }).bindPopup('Current position!\nDrag me around!').addTo(map);
-        myLayer.loadURL('/api/locations?lat=' +myPosition.getLatLng().lat+ '&lon=' +myPosition.getLatLng().lng);
         location = true;
-        map.setView([myPosition.getLatLng().lat, myPosition.getLatLng().lng],9);
-        clearMap();
-        myLayer.loadURL('/api/locations?lat=' +myPosition.getLatLng().lat+ '&lon=' +myPosition.getLatLng().lng);
+        showAllResorts();
     });
 
     // On locaion error set default position
@@ -90,8 +87,7 @@ $(document).ready(function() {
             }),
             draggable: true
         }).bindPopup('Current position!\nDrag me around!').addTo(map);
-        clearMap();
-        myLayer.loadURL('/api/locations?lat=' +myPosition.getLatLng().lat+ '&lon=' +myPosition.getLatLng().lng);
+        showAllResorts();
     });
 
     /////////////////////load all resorts/////////////
@@ -121,6 +117,14 @@ $(document).ready(function() {
     // When the features layer is ready,
     // ie. added to the map, add marker on each polygon and run populateListing.
     myLayer.on('ready', function(){
+        myLayer.setStyle({
+            weight: 1,
+            opacity: 1,
+            color: 'black',
+            dashArray: '5',
+            fillOpacity: 0.2,
+            fillColor: '#ff0000'
+        });
         var skiMarkers = [];
         var hotelMarkers = [];
         myLayer.eachLayer(function(layer){
