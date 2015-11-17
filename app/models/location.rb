@@ -9,7 +9,7 @@ class Location
 
     build_geoJSON(ActiveRecord::Base.connection.execute(<<SQL))
     SELECT name, ST_Distance(ST_SetSRID(ST_MakePoint(#{params[:lon]}, #{params[:lat]}), 4326)::geography, way::geography) as distance,
-                 ST_AsGeoJSON(way) as geometry, 'S' as type
+                 ST_AsGeoJSON(way) as geometry, 'S' as type, tags
     FROM ski_areas AS s
     WHERE #{area} AND (#{difficulty})
     ORDER BY distance
@@ -36,22 +36,22 @@ SQL
     build_geoJSON(ActiveRecord::Base.connection.execute(<<SQL))
     WITH ski_near_hotel AS (
       SELECT s.way as ski_geometry, s.name as ski_name, s.aerialway, s.landuse, s.leisure, s.sport, s.tags,
-             hotels.way as hotel_geometry, hotels.name as hotel_name,
+             hotels.way as hotel_geometry, hotels.name as hotel_name, hotels.tags as hotel_tags,
              ST_Distance(ST_SetSRID(ST_MakePoint(#{params[:lon]}, #{params[:lat]}), 4326)::geography, s.way::geography) as distance
       FROM ski_areas as s
       CROSS JOIN hotels
       WHERE ST_DWithin(s.way::geography,hotels.way::geography,#{hotel_dist}) and
             #{area} AND (#{difficulty})
-      GROUP BY ski_geometry, ski_name, s.aerialway, s.landuse, s.leisure, s.sport, s.tags, hotel_geometry, hotel_name, distance
+      GROUP BY ski_geometry, ski_name, s.aerialway, s.landuse, s.leisure, s.sport, s.tags, hotel_geometry, hotel_name, distance, hotel_tags
     )
 
-    SELECT hotel_name as name, 'H' as type, ST_AsGeoJSON(hotel_geometry) as geometry, '0' as distance
+    SELECT hotel_name as name, 'H' as type, ST_AsGeoJSON(hotel_geometry) as geometry, '0' as distance, hotel_tags as tags
       FROM ski_near_hotel
-      GROUP BY geometry, name, distance
+      GROUP BY geometry, name, distance, hotel_tags
     UNION
-    SELECT ski_name as name, 'S' as type, ST_AsGeoJSON(ski_geometry) as geometry, distance
+    SELECT ski_name as name, 'S' as type, ST_AsGeoJSON(ski_geometry) as geometry, distance, tags
       FROM ski_near_hotel
-      GROUP BY geometry, name, distance
+      GROUP BY geometry, name, distance, tags
       ORDER BY distance
 SQL
   end
@@ -81,7 +81,8 @@ SQL
                 "type": location["type"],
                 "marker-color": "#3887BE",
                 "marker-size": "large",
-                "marker-symbol": "skiing"
+                "marker-symbol": "skiing",
+                "tags": location["tags"]
             }
         }
       else
@@ -93,7 +94,8 @@ SQL
                 "type": location["type"],
                 "marker-color": "#FE7569",
                 "marker-size": "large",
-                "marker-symbol": "lodging"
+                "marker-symbol": "lodging",
+                "tags": location["tags"]
             }
         }
       end
